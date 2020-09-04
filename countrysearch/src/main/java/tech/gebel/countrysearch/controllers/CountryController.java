@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import tech.gebel.countrysearch.models.Country;
 import tech.gebel.countrysearch.repositories.CountryRepository;
@@ -34,5 +35,17 @@ public class CountryController {
         countryRepository.findAll().iterator().forEachRemaining(countries::add);
         countries.sort((country1, country2) -> country1.getName().compareToIgnoreCase(country2.getName()));
         return new ResponseEntity<>(countries, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/names/start/{letter}", produces = {"application/json"})
+    private ResponseEntity<?> getCountriesByLetter(@PathVariable char letter) {
+        ArrayList<Country> countries = new ArrayList<>();
+        countryRepository.findAll().iterator().forEachRemaining(countries::add);
+        List<Country> returnValue =
+                getCountriesByLetter(
+                        countries, country ->
+                                country.getName().toLowerCase().charAt(0) == Character.toLowerCase(letter));
+        returnValue.sort((country1, country2) -> country1.getName().compareToIgnoreCase(country2.getName()));
+        return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 }
