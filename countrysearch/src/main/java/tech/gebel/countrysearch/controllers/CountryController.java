@@ -10,6 +10,7 @@ import tech.gebel.countrysearch.models.Country;
 import tech.gebel.countrysearch.repositories.CountryRepository;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 @RestController
@@ -47,5 +48,19 @@ public class CountryController {
                                 country.getName().toLowerCase().charAt(0) == Character.toLowerCase(letter));
         returnValue.sort((country1, country2) -> country1.getName().compareToIgnoreCase(country2.getName()));
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/population/total", produces = {"application/json"})
+    private ResponseEntity<?> getTotalPopulation() {
+        response = new Hashtable<>();
+        List<Country> countries = new ArrayList<>();
+        countryRepository.findAll().iterator().forEachRemaining(countries::add);
+        long totalPopulation = 0;
+        for (Country country : countries) {
+            totalPopulation += country.getPopulation();
+        }
+        System.out.println("The total population is " + totalPopulation);
+        response.put("Total Population", totalPopulation);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
