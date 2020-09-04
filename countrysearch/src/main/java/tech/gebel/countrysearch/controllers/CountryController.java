@@ -63,4 +63,14 @@ public class CountryController {
         response.put("Total Population", totalPopulation);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping(value = "/population/min", produces = {"application/json"})
+    private ResponseEntity<?> getMinPopulation() {
+        response = new Hashtable<>();
+        ArrayList<Country> countries = new ArrayList<>();
+        countryRepository.findAll().iterator().forEachRemaining(countries::add);
+        countries.sort((country1, country2) -> (int) (country1.getPopulation() - country2.getPopulation()));
+        response.put("lowestPopulation", countries.get(0));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
